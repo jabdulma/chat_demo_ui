@@ -55,11 +55,11 @@ function App() {
         for (var i = 0; i < messageList.length; i++) {
             currentMessage = messageList[i];
             if (currentMessage.role === "assistant") {
-                outputBubbles.push(<AiChat message={currentMessage.content}></AiChat>)
+                outputBubbles.push(<AiChat key={currentMessage.role + "Key-" + i} message={currentMessage.content}></AiChat>)
             } else if (currentMessage.role === "user") {
-                outputBubbles.push(<UserChat message={currentMessage.content}></UserChat>)
+                outputBubbles.push(<UserChat key={currentMessage.role + "Key-" + i} message={currentMessage.content}></UserChat>)
             } else if (currentMessage.role === "system") {
-                outputBubbles.push(<SystemMessage message={currentMessage.content}></SystemMessage>)
+                outputBubbles.push(<SystemMessage key={currentMessage.role + "Key-" + i} message={currentMessage.content}></SystemMessage>)
             }
         }
         return outputBubbles;
@@ -131,12 +131,12 @@ function App() {
                     <Stack>
                         {/* Message Box */}
                         <Grid container sx={{margin:'10px'}} >
-                            <Grid xs={10}>
+                            <Grid item xs={10}>
                                 <Paper sx={{padding:'5px'}}>
                                     <TextField label="Message ChatGPT:" fullWidth />
                                 </Paper>
                             </Grid>
-                            <Grid xs={2}>
+                            <Grid item xs={2}>
                                 <Button variant="contained" size="large" sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
                             </Grid>
                         </Grid>
@@ -144,7 +144,7 @@ function App() {
                                     Below you can change ChatGPTs personality via a system call.  Doing so will clear the current message context.
                         </Box>
                         <Grid container sx={{margin:'10px'}} >
-                            <Grid xs={2}>
+                            <Grid item xs={2}>
                                 <Paper sx={{padding:'5px'}}>
                                     <FormControl fullWidth>
                                         <InputLabel id="demo-simple-select-label">Personality</InputLabel>
@@ -163,12 +163,12 @@ function App() {
                                     </FormControl>
                                 </Paper>
                             </Grid>
-                            <Grid xs={8}>
+                            <Grid item xs={8}>
                                 <Paper sx={{padding:'5px'}}>
                                     <TextField name="personalityDesc" disabled={customTextEnable} label="" value={personalityDesc} onChange={handlePersonalityDescChange} fullWidth />
                                 </Paper>
                             </Grid>
-                            <Grid xs={1}>
+                            <Grid item xs={1}>
                                 <Button variant="contained" size="small" sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
                             </Grid>
                         </Grid>
