@@ -1,5 +1,4 @@
 import React from 'react';
-import BubbleSpacer from "../BubbleSpacer";
 
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';

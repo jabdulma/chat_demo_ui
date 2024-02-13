@@ -3,7 +3,7 @@ import './App.css';
 import AiChat from "./MessageTypes/AiChat";
 import UserChat from "./MessageTypes/UserChat";
 import SystemMessage from "./MessageTypes/SystemMessage";
-
+import axios from 'axios';
 
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Container, Stack } from '@mui/system';
@@ -23,13 +23,6 @@ import {
 import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
-const demoMessages = [
-    {"role": "system", "content": "You are a helpful assistant."},
-    {"role": "user", "content": "Who won the world series in 2020?"},
-    {"role": "assistant", "content": "The Los Angeles Dodgers won the World Series in 2020."},
-    {"role": "user", "content": "Where was it played?"}
-]
-
 const searchParams = new URLSearchParams(document.location.search);
 
 const personalities = {
@@ -39,14 +32,20 @@ const personalities = {
     custom: ""
 }
 
+type messageType = { role: string, content: string };
+
 function App() {
-    const [messages, setMessages] = useState(demoMessages)
-    const [count, setCount] = useState(0);
+    let defaultMessages: messageType[] = []
+    const [messages, setMessages] = useState(defaultMessages)
+    const [lockcode, setLockcode] = useState("");
+    const [chatBubbles, setChatBubbles] = useState([]);
+
+
+    //Remove the following once ChatControls are refacoted
+    const [chatMessage, setChatMessage]=  useState("")
     const [personality, setPersonality] = useState("default");
     const [personalityDesc, setPersonalityDesc] = useState("")
-    const [lockcode, setLockcode] = useState("");
     const [customTextEnable, setCTE] = useState(true)
-
 
     function createChatBubbles(): any {
         var messageList = messages;
@@ -87,40 +86,81 @@ function App() {
 
     const handlePersonalityDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let ptype = event.target.value
-        setPersonalityDesc(event.target.value);
+        setPersonalityDesc(ptype);
     };
+
+    const handlechatMessageChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
+        let msg = event.target.value
+        setChatMessage(msg);
+    };
+
+    const createMessage = (role: string, msg: string) => {
+        return {
+            role: role,
+            content: msg
+        }
+    }
+
+    const statePushMessage = (pushMessage: messageType) => {
+        var msgStack = messages;
+        msgStack.push(pushMessage);
+        setMessages(msgStack);
+    }
+
+    const handleSendMessage = () => {
+        //Create a working message stack to use on state later
+        var msgStack = messages;
+        //Handle starting set personality if needed
+        if(messages.length === 0){
+            msgStack.push(createMessage("system", personalityDesc))
+        }
+        //Push our new message
+        msgStack.push(createMessage("user", chatMessage))
+        //Send out to the API
+        axios.post("/talktoai", {
+            logincode: lockcode,
+            messages: msgStack,
+        }).then(res => {
+            msgStack.push(createMessage("assistant", res.data.message.content));
+            setMessages(msgStack);
+            setChatBubbles(createChatBubbles());
+        })
+        setMessages(msgStack);
+        setChatBubbles(createChatBubbles());
+        setChatMessage("")
+    }
 
     return (
       <React.Fragment>
         <CssBaseline />
         <Container sx={{ border: '0px solid green'}} maxWidth="md">
+
+            <Box sx={{ flexGrow: 1}} >
+                <AppBar position="static">
+                    <Toolbar>
+                        <Typography
+                            variant="h6"
+                            noWrap
+                            component="div"
+                            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                        >
+                            John's Chatbot Demo
+                        </Typography>
+                        <Tooltip title="Please enter a password to use the system.  Password should've been provided with the link, otherwise contact the author." placement="bottom">
+                            <InfoOutlinedIcon sx={{marginRight:'10px'}}/>
+                        </Tooltip>
+                        <Paper>
+                            <TextField value={lockcode} variant="filled" label="System Password" />
+                        </Paper>
+
+                    </Toolbar>
+                </AppBar>
+            </Box>
+
             <Box sx={{ bgcolor: '#f4f4f4', height: '72vh', padding: '10px', overflowY:'scroll'}}>
-
-                <Box sx={{ flexGrow: 1 }}>
-                    <AppBar position="static">
-                        <Toolbar>
-                            <Typography
-                                variant="h6"
-                                noWrap
-                                component="div"
-                                sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-                            >
-                                John's Chatbot Demo
-                            </Typography>
-                            <Tooltip title="Please enter a password to use the system.  Password should've been provided with the link, otherwise contact the author." placement="bottom">
-                                <InfoOutlinedIcon sx={{marginRight:'10px'}}/>
-                            </Tooltip>
-                            <Paper>
-                                <TextField value={lockcode} variant="filled" label="System Password" />
-                            </Paper>
-
-                        </Toolbar>
-                    </AppBar>
-                </Box>
-
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container>
-                        {createChatBubbles()}
+                        {chatBubbles}
                      </Grid>
                 </Box>
             </Box>
@@ -133,11 +173,11 @@ function App() {
                         <Grid container sx={{margin:'10px'}} >
                             <Grid item xs={10}>
                                 <Paper sx={{padding:'5px'}}>
-                                    <TextField label="Message ChatGPT:" fullWidth />
+                                    <TextField label="Message ChatGPT:" value={chatMessage} onChange={handlechatMessageChange} fullWidth />
                                 </Paper>
                             </Grid>
                             <Grid item xs={2}>
-                                <Button variant="contained" size="large" sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
+                                <Button variant="contained" size="large" onClick={handleSendMessage} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
                             </Grid>
                         </Grid>
                         <Box sx={{ flexGrow: 1,  marginLeft:'10px'}}>

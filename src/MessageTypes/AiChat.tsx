@@ -11,7 +11,8 @@ const AiBubble = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(1),
     textAlign: 'left',
     color: '#fff',
-    width: '100%'
+    minWidth: "0px",
+    display: "inline-block"
 }));
 
 const ChatLabel = styled("div")(({ theme }) => ({
