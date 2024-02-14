@@ -64,7 +64,8 @@
     ],
     "moduleNameMapper": {
       "react-markdown": "<rootDir>/mocks/react-markdown.js",
-      "remark-gfm": "<rootDir>/mocks/react-markdown.js"
+      "remark-gfm": "<rootDir>/mocks/react-markdown.js",
+      "axios": "<rootDir>/mocks/axios.js"
     },
     "transform": {
       "^.+\\.ts?$": "ts-jest",

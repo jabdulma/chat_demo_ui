@@ -62,7 +62,8 @@ function App() {
     }, []);
 
     useEffect(() => {
-        bottomDummyElement.current.scrollIntoView({ behavior: "smooth" });
+        let scrollElem : HTMLElement = bottomDummyElement.current;
+        scrollElem.scrollIntoView({ behavior: "smooth" });
     }, [chatBubbles]);
 
     const createMessage = (role: string, msg: string) => {
