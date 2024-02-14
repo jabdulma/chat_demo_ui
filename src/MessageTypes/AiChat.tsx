@@ -4,6 +4,10 @@ import BubbleSpacer from "../BubbleSpacer";
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
 import { styled } from '@mui/material/styles';
+import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm'
+
+import './AiChat.css';
 
 const AiBubble = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#00AAFF' : '#00AAFF',
@@ -34,7 +38,9 @@ function AiChat(props:AiChatProps) {
             <Grid xs={12}><ChatLabel>ChatGPT</ChatLabel></Grid>
             <Grid xs={10} md={8}>
                 <AiBubble>
-                    {props.message}
+                    <Markdown remarkPlugins={[remarkGfm]} className={"noPadding"}>
+                        {props.message}
+                    </Markdown>
                 </AiBubble>
             </Grid>
             <Grid xs={2} md={4}>
