@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import './App.css';
 import AiChat from "./MessageTypes/AiChat";
 import UserChat from "./MessageTypes/UserChat";
@@ -20,17 +20,10 @@ import {
     FormControl, Select, MenuItem, SelectChangeEvent
 } from '@mui/material';
 
-import SendRoundedIcon from '@mui/icons-material/SendRounded';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import ChatControls from "./ChatControls";
 
 const searchParams = new URLSearchParams(document.location.search);
-
-const personalities = {
-    default: "You are a helpful assistant.",
-    aliens: "You are a helpful assistant, but you love talking about aliens.",
-    sassy: "You are a helpful assistant, but you are very sassy.",
-    custom: ""
-}
 
 type messageType = { role: string, content: string };
 
@@ -39,13 +32,9 @@ function App() {
     const [messages, setMessages] = useState(defaultMessages)
     const [lockcode, setLockcode] = useState("");
     const [chatBubbles, setChatBubbles] = useState([]);
-
-
-    //Remove the following once ChatControls are refacoted
-    const [chatMessage, setChatMessage]=  useState("")
-    const [personality, setPersonality] = useState("default");
     const [personalityDesc, setPersonalityDesc] = useState("")
-    const [customTextEnable, setCTE] = useState(true)
+
+    const bottomDummyElement = useRef(document.createElement("div"));
 
     function createChatBubbles(): any {
         var messageList = messages;
@@ -67,32 +56,14 @@ function App() {
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
         // Update the document title using the browser API
-        document.title = `ChatGPT Integration Demo`;
+        document.title = `John's ChatGPT Integration Demo`;
         setLockcode(searchParams.get("lc") || "")
-        setPersonality("default")
-        setPersonalityDesc(personalities.default)
         console.log("Running useEffect")
     }, []);
 
-    const handlePersonalityChange = (event: SelectChangeEvent<typeof personality>) => {
-        type personalityKeyType = keyof typeof personalities;
-        let personalityKey: personalityKeyType = event.target.value as personalityKeyType;
-
-        let ptype = event.target.value
-        setCTE(ptype === "custom" ? false : true)
-        setPersonality(event.target.value);
-        setPersonalityDesc(personalities[personalityKey])
-    };
-
-    const handlePersonalityDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let ptype = event.target.value
-        setPersonalityDesc(ptype);
-    };
-
-    const handlechatMessageChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
-        let msg = event.target.value
-        setChatMessage(msg);
-    };
+    useEffect(() => {
+        bottomDummyElement.current.scrollIntoView({ behavior: "smooth" });
+    }, [chatBubbles]);
 
     const createMessage = (role: string, msg: string) => {
         return {
@@ -107,7 +78,12 @@ function App() {
         setMessages(msgStack);
     }
 
-    const handleSendMessage = () => {
+    const receiveNewPersonality = (freshPersonality: string) => {
+        setPersonalityDesc(freshPersonality);
+        setMessages([createMessage("system", freshPersonality)]);
+    }
+
+    const sendOutMessageToApi = (msg: string) => {
         //Create a working message stack to use on state later
         var msgStack = messages;
         //Handle starting set personality if needed
@@ -115,7 +91,7 @@ function App() {
             msgStack.push(createMessage("system", personalityDesc))
         }
         //Push our new message
-        msgStack.push(createMessage("user", chatMessage))
+        msgStack.push(createMessage("user", msg))
         //Send out to the API
         axios.post("/talktoai", {
             logincode: lockcode,
@@ -127,14 +103,12 @@ function App() {
         })
         setMessages(msgStack);
         setChatBubbles(createChatBubbles());
-        setChatMessage("")
     }
 
     return (
       <React.Fragment>
         <CssBaseline />
         <Container sx={{ border: '0px solid green'}} maxWidth="md">
-
             <Box sx={{ flexGrow: 1}} >
                 <AppBar position="static">
                     <Toolbar>
@@ -157,65 +131,22 @@ function App() {
                 </AppBar>
             </Box>
 
-            <Box sx={{ bgcolor: '#f4f4f4', height: '72vh', padding: '10px', overflowY:'scroll'}}>
+            <Box sx={{ bgcolor: '#f4f4f4', minHeight:'300px', height:'calc(100vh - (200px + 64px))', padding: '10px', overflowY:'scroll'}}>
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container>
                         {chatBubbles}
                      </Grid>
+                    <div style={{ float:"left", clear: "both" }}
+                         ref={bottomDummyElement}>
+                    </div>
                 </Box>
             </Box>
         </Container>
-        <Container sx={{ border: '0px solid red'}} maxWidth="md">
-            <Box sx={{ bgcolor: '#FFe8fc', height: '20vh', minHeight:'200px' }}>
-                <Box sx={{ flexGrow: 1 }}>
-                    <Stack>
-                        {/* Message Box */}
-                        <Grid container sx={{margin:'10px'}} >
-                            <Grid item xs={10}>
-                                <Paper sx={{padding:'5px'}}>
-                                    <TextField label="Message ChatGPT:" value={chatMessage} onChange={handlechatMessageChange} fullWidth />
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={2}>
-                                <Button variant="contained" size="large" onClick={handleSendMessage} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
-                            </Grid>
-                        </Grid>
-                        <Box sx={{ flexGrow: 1,  marginLeft:'10px'}}>
-                                    Below you can change ChatGPTs personality via a system call.  Doing so will clear the current message context.
-                        </Box>
-                        <Grid container sx={{margin:'10px'}} >
-                            <Grid item xs={2}>
-                                <Paper sx={{padding:'5px'}}>
-                                    <FormControl fullWidth>
-                                        <InputLabel id="demo-simple-select-label">Personality</InputLabel>
-                                        <Select
-                                            labelId="demo-simple-select-label"
-                                            id="demo-simple-select"
-                                            label="Personality"
-                                            value={personality}
-                                            onChange={handlePersonalityChange}
-                                        >
-                                            <MenuItem value={"default"}>Default</MenuItem>
-                                            <MenuItem value={"aliens"}>Alien Fan</MenuItem>
-                                            <MenuItem value={"sassy"}>Sassy</MenuItem>
-                                            <MenuItem value={"custom"}>Custom</MenuItem>
-                                        </Select>
-                                    </FormControl>
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={8}>
-                                <Paper sx={{padding:'5px'}}>
-                                    <TextField name="personalityDesc" disabled={customTextEnable} label="" value={personalityDesc} onChange={handlePersonalityDescChange} fullWidth />
-                                </Paper>
-                            </Grid>
-                            <Grid item xs={1}>
-                                <Button variant="contained" size="small" sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
-                            </Grid>
-                        </Grid>
-                    </Stack>
-                </Box>
-            </Box>
-        </Container>
+        <ChatControls
+            sendChatToApp={sendOutMessageToApi}
+            sendPersonalityToApp={receiveNewPersonality}
+            personality={personalityDesc}
+        />
       </React.Fragment>
     );
 }

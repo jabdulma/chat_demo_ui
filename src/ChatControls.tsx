@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
@@ -17,8 +17,11 @@ const personalities = {
 }
 
 type ChatControlProps = {
+
     sendChatToApp: Function,
-    sendPersonalityToApp: Function
+    sendPersonalityToApp: Function,
+
+    personality: String,
 }
 
 
@@ -27,12 +30,19 @@ function ChatControls(props:ChatControlProps) {
     const [chatMessage, setChatMessage]=  useState("")
     const [personality, setPersonality] = useState("default");
     const [personalityDesc, setPersonalityDesc] = useState("")
-    const [lockcode, setLockcode] = useState("");
     const [customTextEnable, setCTE] = useState(true)
 
+    // Similar to componentDidMount and componentDidUpdate:
+    useEffect(() => {
+        setPersonality("default")
+        setPersonalityDesc(personalities.default)
+        props.sendPersonalityToApp(personalities.default)
+    }, []);
 
     const handleSendMessage = () => {
         // Send to App for handling
+        props.sendChatToApp(chatMessage)
+        setChatMessage("")
     }
 
 
@@ -51,15 +61,23 @@ function ChatControls(props:ChatControlProps) {
         let personalityKey: personalityKeyType = event.target.value as personalityKeyType;
 
         let ptype = event.target.value
+        let pdesc = personalities[personalityKey]
         setCTE(ptype === "custom" ? false : true)
         setPersonality(event.target.value);
-        setPersonalityDesc(personalities[personalityKey])
+        setPersonalityDesc(pdesc)
+        if(ptype !== "custom"){
+            props.sendPersonalityToApp(pdesc)
+        }
     };
+
+    const setCustomPersonality = () => {
+        props.sendPersonalityToApp(personalityDesc)
+    }
 
     return (
         <React.Fragment>
             <Container sx={{ border: '0px solid red'}} maxWidth="md">
-                <Box sx={{ bgcolor: '#FFe8fc', height: '20vh', minHeight:'200px' }}>
+                <Box sx={{ borderTop: '1px solid #AAAAAA', flex: 1, bgcolor: '#E9E9E9', height: '200px', minHeight:'200px' }}>
                     <Box sx={{ flexGrow: 1 }}>
                         <Stack>
                             {/* Message Box */}
@@ -102,7 +120,7 @@ function ChatControls(props:ChatControlProps) {
                                     </Paper>
                                 </Grid>
                                 <Grid xs={1}>
-                                    <Button variant="contained" size="small" sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
+                                    <Button variant="contained" size="small" disabled={customTextEnable} onClick={setCustomPersonality} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
                                 </Grid>
                             </Grid>
                         </Stack>

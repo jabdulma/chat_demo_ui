@@ -1,46 +1,42 @@
-# Getting Started with Create React App
+# John's ChatGPT Demo
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a portfolio app to show skills and capabilities of the author.  It can be set up locally with NodeJS, or in an upcoming feature can be deployed to Azure.
 
-## Available Scripts
+The demo is a simple ChatGPT client, running through a local API contained within the `nodeapi` directory.  The client was developed with React, and the API with Node.  The UI components were provided by MUI.
 
-In the project directory, you can run:
 
-### `npm start`
+## Installation
+As long as you have an OpenAI API key, NodeJS, and Yarn, this repo can be run locally.  Just clone the repo and run `yarn` to install dependencies.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### Installation steps and running locally:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+*This assumes Node and Yarn have been installed*
 
-### `npm test`
+1. Clone the repo `git clone git@github.com:jabdulma/chat_demo_ui.git` or similar
+2. Run `yarn` to install packages locally
+3. In the base repo directory, create a `.env` file with the following parameters.  The `.exampleenv` file has been provided for reference.
+   1. `apikey={openai api key here}`
+   2. `apiport=4000`
+   3. `passwords={passwords}` where {passwords} is a comma-separated list of passwords
+4. run `yarn runapi` and in a separate console window, `yarn start`
+5. After a few moments the api will be available locally on `localhost:4000` and the UI will be available at [http://localhost:3000](http://localhost:3000).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Notes and FAQ:
 
-### `npm run build`
+### Changing the port
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Changing the port can be done easily by changing the `apiport` parameter in your `.env` file.  If you make this change, 
+be sure to change the corresponding proxy port in `package.json`.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Why are the UI and API in the same repo?
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Being a portfolio project, and because of the limited size of the API, I felt it was reasonable to leave everything in a single 
+repository.  In a production or enterprise environment, I would want them in separate repos.
 
-### `npm run eject`
+### Why the passcode system?  It's not secure.
+The goal of the password system is only to limit API usage to those with trusted links.  I'm not looking to cover other attack vectors and 
+full authentication is outside of scope for this demonstration.  I would actually leave it completely open except that I'm using paid API 
+access to power it.  To make testing easier locally, leave the parameter blank so a blank password is allowed.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Other feedback / questions:
+Feel free to reach out to me at jabdulma@gmail.com with any feedback or questions you may have.  Thanks for looking at my demo!

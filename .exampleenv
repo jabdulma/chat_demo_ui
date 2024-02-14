@@ -1,0 +1,6 @@
+#openAI API key
+apikey=
+#api port to use
+apiport=
+#comma separated list of passcodes.  leave blank to allow no passcodes
+passwords=
