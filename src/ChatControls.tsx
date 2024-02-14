@@ -21,7 +21,7 @@ type ChatControlProps = {
     sendChatToApp: Function,
     sendPersonalityToApp: Function,
 
-    personality: String,
+    personality: string,
 }
 
 
@@ -34,9 +34,14 @@ function ChatControls(props:ChatControlProps) {
 
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
-        setPersonality("default")
-        setPersonalityDesc(personalities.default)
-        props.sendPersonalityToApp(personalities.default)
+        if(props.personality !== ""){
+            setPersonality(personalities.custom)
+            setPersonalityDesc(props.personality)
+        } else {
+            setPersonality("default")
+            setPersonalityDesc(personalities.default)
+            props.sendPersonalityToApp(personalities.default)
+        }
     }, []);
 
     const handleSendMessage = () => {

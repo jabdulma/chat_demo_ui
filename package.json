@@ -27,6 +27,8 @@
     "react-markdown": "^9.0.1",
     "react-scripts": "5.0.1",
     "remark-gfm": "^4.0.0",
+    "ts-jest": "^29.1.2",
+    "ts-node": "^10.9.2",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -56,8 +58,24 @@
       "last 1 safari version"
     ]
   },
+  "jest": {
+    "transformIgnorePatterns": [
+      "<rootDir>/node_modules/(?!react-markdown/)"
+    ],
+    "moduleNameMapper": {
+      "react-markdown": "<rootDir>/mocks/react-markdown.js",
+      "remark-gfm": "<rootDir>/mocks/react-markdown.js"
+    },
+    "transform": {
+      "^.+\\.ts?$": "ts-jest",
+      "^.+\\.(js|jsx)$": "babel-jest"
+    }
+  },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/core": "^7.23.9",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/preset-env": "^7.23.9",
+    "babel-jest": "^29.7.0"
   },
   "resolutions": {
     "eslint-plugin-react": "^7.33.1",
