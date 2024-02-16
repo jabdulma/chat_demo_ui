@@ -1,6 +1,10 @@
 # John's ChatGPT Demo
 
-This project is a portfolio app to show skills and capabilities of the author.  It can be set up locally with NodeJS, or in an upcoming feature can be deployed to Azure.
+![Screenshot of a ChatGPT client](/screen.png?raw=true "Screenshot of Demo")
+
+Now available running on Azure at **[aichat.john-am.com](https://aichat.john-am.com)** - Passcode required for use, please contact me (or check my resume) for a passcode!
+
+This project is a portfolio app to show skills and capabilities of the author.  It can be set up locally with NodeJS, or can be deployed to Azure.
 
 The demo is a simple ChatGPT client, running through a local API contained within the `nodeapi` directory.  The client was developed with React, and the API with Node.  The UI components were provided by MUI.
 
@@ -37,6 +41,20 @@ repository.  In a production or enterprise environment, I would want them in sep
 The goal of the password system is only to limit API usage to those with trusted links.  I'm not looking to cover other attack vectors and 
 full authentication is outside of scope for this demonstration.  I would actually leave it completely open except that I'm using paid API 
 access to power it.  To make testing easier locally, leave the parameter blank so a blank password is allowed.
+
+### Why are you using Google Analytics?
+Pure curiosity on how the app is being used.  In a previous position I worked extensively with Analytics apps including GA and 
+SiteCatalyst.  Being so familiar with them makes it easy for me to add them in.  I only track when messages are sent, and do not 
+track message content.
+
+### What about Mobile?
+With [MUI](https://mui.com/core/) the components used can easily be scaled to mobile.  It does require some additional styling, which 
+will come in a future update.
+
+### Why 2 versions of the API?
+Two reasons, one is that the Node version was written first and a slightly different version was needed for Azure.  But also 
+I didn't feel requiring Azure to run locally was appropriate for a portfolio project where the viewer may not have Azure CLI 
+tools installed.  In an enterprise or production environment I would not propose maintaining two versions of the same API.
 
 ### Other feedback / questions:
 Feel free to reach out to me at jabdulma@gmail.com with any feedback or questions you may have.  Thanks for looking at my demo!
