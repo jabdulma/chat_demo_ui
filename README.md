@@ -14,16 +14,25 @@ As long as you have an OpenAI API key, NodeJS, and Yarn, this repo can be run lo
 
 ### Installation steps and running locally:
 
-*This assumes Node and Yarn have been installed*
+*This assumes Node and Npm have been installed*
 
 1. Clone the repo `git clone git@github.com:jabdulma/chat_demo_ui.git` or similar
-2. Run `yarn` to install packages locally
+2. Run `npm install` to install packages locally
 3. In the base repo directory, create a `.env` file with the following parameters.  The `.exampleenv` file has been provided for reference.
    1. `apikey={openai api key here}`
    2. `apiport=4000`
    3. `passwords={passwords}` where {passwords} is a comma-separated list of passwords
-4. run `yarn runapi` and in a separate console window, `yarn start`
+4. run `npm run runapi` and in a separate console window, `npm start`
 5. After a few moments the api will be available locally on `localhost:4000` and the UI will be available at [http://localhost:3000](http://localhost:3000).
+
+### Running with Azure CLI
+
+*This assumes Azure CLI tools have been installed* 
+
+1. Perform steps 1-3 above, the `apiport` parameter can be omitted
+2. copy the .env file to `./azureapi`
+3. run `npm build` to create a built version of the webapp
+4. run `swa start build --api-location azureapi` to run the webapp with the API wired up in place.
 
 ## Notes and FAQ:
 
