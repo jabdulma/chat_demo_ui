@@ -1,3 +1,6 @@
+//const OpenAI = require('openai');
+//require('dotenv/config');
+//const express = require('express');
 import OpenAI from "openai";
 import 'dotenv/config';
 import express from "express";
@@ -12,7 +15,15 @@ console.log(JSON.stringify(passwords))
 var app = express();
 app.use(express.json());
 
-
+function createError(status, msg){
+    var errObj = {};
+    errObj.status = status || 500;
+    errObj.body = {message: msg};
+    return {
+        status: status || 500,
+        message: msg || "Internal Server Error"
+    }
+}
 
 async function getFromOpenAi(incomingMessages){
     const completion = await openai.chat.completions.create({
@@ -32,37 +43,34 @@ async function getFromOpenAiStream(incomingMessages){
     return completion;
 }
 
-
-app.post('/talktoai', async function (req, res, next){
+app.post('/api/talktoai', async function (req, res){
     //req.body; // JavaScript object containing the parse JSON
     console.log(req.body);
     console.log(passwords.indexOf(req.body.logincode.toLowerCase()) < 0)
     //Since API access costs money, I just want to keep a basic barrier against abuse.
-    try {
-        if(!req.body.logincode){
-            console.log(req.body.logincode)
-            throw new Error('Missing passcode');
-        } else if(passwords.indexOf(req.body.logincode.toLowerCase()) < 0){
-            throw new Error('Invalid passcode');
-        }
-        console.log("Before if");
-        if(!Array.isArray(req.body.messages)){
-            console.log("Body Messages Caught");
-            throw new Error('Invalid input, messages are not an array.');
-        } else if(!req.body.messages[0]['role'] || !req.body.messages[0]['content']){
-            console.log("Body Message Content caught");
-            throw new Error('Invalid input, missing role or content.');
-        }
-        console.log("Before getFromOpenAi");
-        var response = await getFromOpenAi(req.body.messages);
-        console.log(response)
 
-        res.json(response);
-    } catch (err){
-        next(err);
+    var resObj = {};
+
+    //Since API access costs money, I just want to keep a basic barrier against abuse.
+    if(!req.body.logincode){
+        res.status(400).json(createError(400, "Missing passcode"));
+    } else if(passwords.indexOf(req.body.logincode.toLowerCase()) < 0){
+        res.status(400).json(createError(400,'Invalid passcode'));
     }
+    //Error handling
+    else if(!Array.isArray(req.body.messages)){
+        res.status(400).json(createError(400,'Invalid input, messages are not an array.'));
+    } else if(!req.body.messages[0]['role'] || !req.body.messages[0]['content']){
+        res.status(400).json(createError(400,'Invalid input, missing role or content.'));
+    } else {
+        var chatGptMessage = await getFromOpenAi(req.body.messages);
+        //resObj.status = 200;
+        resObj = chatGptMessage
+    }
+    res.json(resObj);
 });
 
+//Work in progress on streaming version of the API
 app.post('/talktoaistream', async function (req, res){
     //req.body; // JavaScript object containing the parse JSON
     console.log(req.body);
@@ -87,17 +95,3 @@ app.post('/talktoaistream', async function (req, res){
 app.listen(process.env.apiport, () => {
     console.log("Server running on port " + process.env.apiport);
 });
-
-/*
-async function main() {
-
-
-    const completion = await openai.chat.completions.create({
-        messages: [{ role: "system", content: "Hello ChatGPT, this is Clem Fandango.  Can you hear me?" }],
-        model: "gpt-3.5-turbo",
-    });
-
-    console.log(completion.choices[0]);
-}
-
-main();*/

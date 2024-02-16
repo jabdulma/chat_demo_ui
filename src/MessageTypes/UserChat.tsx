@@ -10,7 +10,7 @@ const UserBubble = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#00FFAA' : '#88BB88',
     ...theme.typography.body2,
     padding: theme.spacing(1),
-    textAlign: 'right',
+    textAlign: 'left',
     color: '#fff',
     minWidth: "0px",
     display: "inline-block"

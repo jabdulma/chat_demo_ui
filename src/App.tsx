@@ -14,7 +14,7 @@ import {
     Typography,
     AppBar,
     Toolbar,
-    Tooltip
+    Tooltip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button
 } from '@mui/material';
 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -31,7 +31,17 @@ function App() {
     const [chatBubbles, setChatBubbles] = useState([]);
     const [personalityDesc, setPersonalityDesc] = useState("")
 
+    //Dialog State
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [dialogText, setDialogText] = useState("");
+
+    //Scoll element
     const bottomDummyElement = useRef(document.createElement("div"));
+
+    function handleDialogClose(): void{
+        setChatBubbles(createChatBubbles());
+        setDialogOpen(false);
+    }
 
     function createChatBubbles(): any {
         var messageList = messages;
@@ -55,7 +65,6 @@ function App() {
         // Update the document title using the browser API
         document.title = `John's ChatGPT Integration Demo`;
         setLockcode(searchParams.get("lc") || "")
-        console.log("Running useEffect")
     }, []);
 
     useEffect(() => {
@@ -81,6 +90,22 @@ function App() {
         setMessages([createMessage("system", freshPersonality)]);
     }
 
+    const openErrorDialog = (msg: string) => {
+        if(msg.indexOf("passcode") > 0){
+        setDialogText(
+            `Received error: ${msg}.
+                   Please reload the page and try again.
+            
+                   To speak with ChatGPT you will need a passcode that should have been provided with the link.  The passcode can be entered in the upper left of the page.  If you didn't receive a passcode, please contact the author.`)
+        } else {
+            setDialogText(
+                `Received error: ${msg}.
+                Please reload the page and try again.  If the error persists, please contact the author.`
+            )
+        }
+        setDialogOpen(true)
+    }
+
     const sendOutMessageToApi = (msg: string) => {
         //Create a working message stack to use on state later
         var msgStack = messages;
@@ -91,17 +116,31 @@ function App() {
         //Push our new message
         msgStack.push(createMessage("user", msg))
         //Send out to the API
-        axios.post("/talktoai", {
+        axios.post("/api/talktoai", {
             logincode: lockcode,
             messages: msgStack,
         }).then(res => {
             msgStack.push(createMessage("assistant", res.data.message.content));
             setMessages(msgStack);
             setChatBubbles(createChatBubbles());
+        }).catch(error => {
+            setMessages([]);
+            openErrorDialog((error?.response?.data?.message ?? "Internal error"))
         })
         setMessages(msgStack);
         setChatBubbles(createChatBubbles());
     }
+
+    const handlePersonalityDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let ptype = event.target.value
+        setPersonalityDesc(ptype);
+    };
+
+    const handlePasscodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let lc = event.target.value
+        setLockcode(lc);
+    }
+
 
     return (
       <React.Fragment>
@@ -122,7 +161,7 @@ function App() {
                             <InfoOutlinedIcon sx={{marginRight:'10px'}}/>
                         </Tooltip>
                         <Paper>
-                            <TextField value={lockcode} variant="filled" label="System Password" />
+                            <TextField value={lockcode} onChange={handlePasscodeChange} variant="filled" label="System Password" />
                         </Paper>
 
                     </Toolbar>
@@ -145,6 +184,26 @@ function App() {
             sendPersonalityToApp={receiveNewPersonality}
             personality={personalityDesc}
         />
+          <Dialog
+              open={dialogOpen}
+              onClose={handleDialogClose}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+          >
+              <DialogTitle id="alert-dialog-title">
+                  {"There was a problem sending the request."}
+              </DialogTitle>
+              <DialogContent>
+                  <DialogContentText style={{whiteSpace: 'pre-line'}} id="alert-dialog-description">
+                      {dialogText}
+                  </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                  <Button onClick={handleDialogClose} autoFocus>
+                      Ok
+                  </Button>
+              </DialogActions>
+          </Dialog>
       </React.Fragment>
     );
 }

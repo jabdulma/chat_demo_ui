@@ -30,7 +30,8 @@ function ChatControls(props:ChatControlProps) {
     const [chatMessage, setChatMessage]=  useState("")
     const [personality, setPersonality] = useState("default");
     const [personalityDesc, setPersonalityDesc] = useState("")
-    const [customTextEnable, setCTE] = useState(true)
+    const [customTextDisable, setCTD] = useState(true)
+    const [sendChatDisable, setSCD] = useState(true)
 
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
@@ -48,11 +49,13 @@ function ChatControls(props:ChatControlProps) {
         // Send to App for handling
         props.sendChatToApp(chatMessage)
         setChatMessage("")
+        setSCD(true)
     }
 
 
     const handlechatMessageChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
         let msg = event.target.value
+        setSCD(msg === "")
         setChatMessage(msg);
     };
 
@@ -67,13 +70,20 @@ function ChatControls(props:ChatControlProps) {
 
         let ptype = event.target.value
         let pdesc = personalities[personalityKey]
-        setCTE(ptype === "custom" ? false : true)
+        setCTD(ptype === "custom" ? false : true)
         setPersonality(event.target.value);
         setPersonalityDesc(pdesc)
         if(ptype !== "custom"){
             props.sendPersonalityToApp(pdesc)
         }
     };
+
+    const handleChatKeyDown =  (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if(event.key == "Enter" || event.key == "Enter"){
+            handleSendMessage();
+            setSCD(true);
+        }
+    }
 
     const setCustomPersonality = () => {
         props.sendPersonalityToApp(personalityDesc)
@@ -89,11 +99,11 @@ function ChatControls(props:ChatControlProps) {
                             <Grid container sx={{margin:'10px'}} >
                                 <Grid xs={10}>
                                     <Paper sx={{padding:'5px'}}>
-                                        <TextField label="Message ChatGPT:" value={chatMessage} onChange={handlechatMessageChange} fullWidth />
+                                        <TextField label="Message ChatGPT:" value={chatMessage} onKeyDown={handleChatKeyDown} onChange={handlechatMessageChange} fullWidth />
                                     </Paper>
                                 </Grid>
                                 <Grid xs={2}>
-                                    <Button variant="contained" size="large" onClick={handleSendMessage} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
+                                    <Button variant="contained" size="large" disabled={sendChatDisable} onClick={handleSendMessage} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
                                 </Grid>
                             </Grid>
                             <Box sx={{ flexGrow: 1,  marginLeft:'10px'}}>
@@ -121,11 +131,11 @@ function ChatControls(props:ChatControlProps) {
                                 </Grid>
                                 <Grid xs={8}>
                                     <Paper sx={{padding:'5px'}}>
-                                        <TextField name="personalityDesc" disabled={customTextEnable} label="" value={personalityDesc} onChange={handlePersonalityDescChange} fullWidth />
+                                        <TextField name="personalityDesc" disabled={customTextDisable} label="" value={personalityDesc} onChange={handlePersonalityDescChange} fullWidth />
                                     </Paper>
                                 </Grid>
                                 <Grid xs={1}>
-                                    <Button variant="contained" size="small" disabled={customTextEnable} onClick={setCustomPersonality} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
+                                    <Button variant="contained" size="small" disabled={customTextDisable} onClick={setCustomPersonality} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
                                 </Grid>
                             </Grid>
                         </Stack>
