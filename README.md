@@ -30,7 +30,7 @@ As long as you have an OpenAI API key, NodeJS, and Yarn, this repo can be run lo
 *This assumes Azure CLI tools have been installed* 
 
 1. Perform steps 1-3 above, the `apiport` parameter can be omitted
-2. copy the .env file to `./azureapi`
+2. copy the `.env` file to `./azureapi`
 3. run `npm build` to create a built version of the webapp
 4. run `swa start build --api-location azureapi` to run the webapp with the API wired up in place.
 
