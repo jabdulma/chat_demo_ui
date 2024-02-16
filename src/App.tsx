@@ -20,7 +20,12 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ChatControls from "./ChatControls";
 
+import ReactGA from "react-ga4";
+ReactGA.initialize(process.env.REACT_APP_GA_CODE || "");
+
 const searchParams = new URLSearchParams(document.location.search);
+
+declare let gtag: Function;
 
 type messageType = { role: string, content: string };
 
@@ -86,6 +91,10 @@ function App() {
     }
 
     const receiveNewPersonality = (freshPersonality: string) => {
+        ReactGA.event("setPersonality", {
+            personality: freshPersonality,
+            lcode: lockcode
+        });
         setPersonalityDesc(freshPersonality);
         setMessages([createMessage("system", freshPersonality)]);
     }
@@ -107,6 +116,9 @@ function App() {
     }
 
     const sendOutMessageToApi = (msg: string) => {
+        ReactGA.event("sendMessage", {
+            lcode: lockcode
+        });
         //Create a working message stack to use on state later
         var msgStack = messages;
         //Handle starting set personality if needed
