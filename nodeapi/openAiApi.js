@@ -45,8 +45,6 @@ async function getFromOpenAiStream(incomingMessages){
 
 app.post('/api/talktoai', async function (req, res){
     //req.body; // JavaScript object containing the parse JSON
-    console.log(req.body);
-    console.log(passwords.indexOf(req.body.logincode.toLowerCase()) < 0)
     //Since API access costs money, I just want to keep a basic barrier against abuse.
 
     var resObj = {};

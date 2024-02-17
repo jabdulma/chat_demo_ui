@@ -91,18 +91,18 @@ function ChatControls(props:ChatControlProps) {
 
     return (
         <React.Fragment>
-            <Container sx={{ border: '0px solid red'}} maxWidth="md">
-                <Box sx={{ borderTop: '1px solid #AAAAAA', flex: 1, bgcolor: '#E9E9E9', height: '200px', minHeight:'200px' }}>
+            <Container sx={{ border: '0px solid red', paddingLeft: '0px', paddingRight:'0px'}} maxWidth="md">
+                <Box sx={{ borderTop: '1px solid #AAAAAA', flex: 1, bgcolor: '#E9E9E9', height: '238px', minHeight:'238px' }}>
                     <Box sx={{ flexGrow: 1 }}>
                         <Stack>
                             {/* Message Box */}
                             <Grid container sx={{margin:'10px'}} >
-                                <Grid xs={10}>
+                                <Grid xs={8} sm={9} md={10}>
                                     <Paper sx={{padding:'5px'}}>
                                         <TextField label="Message ChatGPT:" value={chatMessage} onKeyDown={handleChatKeyDown} onChange={handlechatMessageChange} fullWidth />
                                     </Paper>
                                 </Grid>
-                                <Grid xs={2}>
+                                <Grid xs={4} sm={2}>
                                     <Button variant="contained" size="large" disabled={sendChatDisable} onClick={handleSendMessage} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
                                 </Grid>
                             </Grid>
@@ -110,7 +110,7 @@ function ChatControls(props:ChatControlProps) {
                                 Below you can change ChatGPTs personality via a system call.  Doing so will clear the current message context.
                             </Box>
                             <Grid container sx={{margin:'10px'}} >
-                                <Grid xs={2}>
+                                <Grid xs={4} sm={2}>
                                     <Paper sx={{padding:'5px'}}>
                                         <FormControl fullWidth>
                                             <InputLabel id="demo-simple-select-label">Personality</InputLabel>
@@ -129,12 +129,12 @@ function ChatControls(props:ChatControlProps) {
                                         </FormControl>
                                     </Paper>
                                 </Grid>
-                                <Grid xs={8}>
+                                <Grid xs={5} sm={8}>
                                     <Paper sx={{padding:'5px'}}>
                                         <TextField name="personalityDesc" disabled={customTextDisable} label="" value={personalityDesc} onChange={handlePersonalityDescChange} fullWidth />
                                     </Paper>
                                 </Grid>
-                                <Grid xs={1}>
+                                <Grid xs={1} sm={2}>
                                     <Button variant="contained" size="small" disabled={customTextDisable} onClick={setCustomPersonality} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
                                 </Grid>
                             </Grid>

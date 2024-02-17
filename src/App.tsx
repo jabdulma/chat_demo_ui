@@ -3,8 +3,10 @@ import './App.css';
 import AiChat from "./MessageTypes/AiChat";
 import UserChat from "./MessageTypes/UserChat";
 import SystemMessage from "./MessageTypes/SystemMessage";
+import InfoMessage from "./MessageTypes/InfoMessage";
 import axios from 'axios';
 
+import {createTheme, responsiveFontSizes, ThemeProvider} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Container } from '@mui/system';
 import {
@@ -20,17 +22,23 @@ import {
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ChatControls from "./ChatControls";
 
+import backgroundImage from './img/background-topography.png';
+import githubLogo from './img/github-mark-white.png';
+
 import ReactGA from "react-ga4";
 ReactGA.initialize(process.env.REACT_APP_GA_CODE || "");
 
+let theme = createTheme();
+theme = responsiveFontSizes(theme);
+
 const searchParams = new URLSearchParams(document.location.search);
 
-declare let gtag: Function;
-
 type messageType = { role: string, content: string };
+const initMessages: messageType =  { role: "info", content: "Welcome!  To start using this chat enter a message to ChatGPT below." }
+
 
 function App() {
-    let defaultMessages: messageType[] = []
+    let defaultMessages: messageType[] = [initMessages]
     const [messages, setMessages] = useState(defaultMessages)
     const [lockcode, setLockcode] = useState("");
     const [chatBubbles, setChatBubbles] = useState([]);
@@ -54,13 +62,21 @@ function App() {
         let outputBubbles: any[] = [];
         for (var i = 0; i < messageList.length; i++) {
             currentMessage = messageList[i];
-            if (currentMessage.role === "assistant") {
-                outputBubbles.push(<AiChat key={currentMessage.role + "Key-" + i} message={currentMessage.content}></AiChat>)
-            } else if (currentMessage.role === "user") {
-                outputBubbles.push(<UserChat key={currentMessage.role + "Key-" + i} message={currentMessage.content}></UserChat>)
-            } else if (currentMessage.role === "system") {
-                outputBubbles.push(<SystemMessage key={currentMessage.role + "Key-" + i} message={currentMessage.content}></SystemMessage>)
-            }
+
+           switch(currentMessage.role){
+               case 'info':
+                   outputBubbles.push(<InfoMessage key={currentMessage.role + "Key-" + i} message={currentMessage.content}></InfoMessage>);
+                   break;
+               case 'system':
+                   outputBubbles.push(<SystemMessage key={currentMessage.role + "Key-" + i} message={currentMessage.content}></SystemMessage>);
+                   break;
+               case 'assistant':
+                   outputBubbles.push(<AiChat key={currentMessage.role + "Key-" + i} message={currentMessage.content}></AiChat>);
+                   break;
+               case 'user':
+                   outputBubbles.push(<UserChat key={currentMessage.role + "Key-" + i} message={currentMessage.content}></UserChat>);
+                   break;
+           }
         }
         return outputBubbles;
     }
@@ -70,6 +86,7 @@ function App() {
         // Update the document title using the browser API
         document.title = `John's ChatGPT Integration Demo`;
         setLockcode(searchParams.get("lc") || "")
+        setChatBubbles(createChatBubbles());
     }, []);
 
     useEffect(() => {
@@ -136,7 +153,7 @@ function App() {
             setMessages(msgStack);
             setChatBubbles(createChatBubbles());
         }).catch(error => {
-            setMessages([]);
+            setMessages([initMessages]);
             openErrorDialog((error?.response?.data?.message ?? "Internal error"))
         })
         setMessages(msgStack);
@@ -156,31 +173,35 @@ function App() {
 
     return (
       <React.Fragment>
+          <ThemeProvider theme={theme}>
+
         <CssBaseline />
-        <Container sx={{ border: '0px solid green'}} maxWidth="md">
+        <Container sx={{ padding: '0px', border: '0px solid green'}} maxWidth="md">
             <Box sx={{ flexGrow: 1}} >
                 <AppBar position="static">
                     <Toolbar>
+                        <a href="https://github.com/jabdulma/chat_demo_ui"><img style={{width:'40px', marginRight: '15px'}} src={githubLogo} /></a>
                         <Typography
                             variant="h6"
                             noWrap
                             component="div"
-                            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                            sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' }}}
                         >
                             John's Chatbot Demo
-                        </Typography>
-                        <Tooltip title="Please enter a password to use the system.  Password should've been provided with the link, otherwise contact the author." placement="bottom">
-                            <InfoOutlinedIcon sx={{marginRight:'10px'}}/>
-                        </Tooltip>
-                        <Paper>
-                            <TextField value={lockcode} onChange={handlePasscodeChange} variant="filled" label="System Password" />
-                        </Paper>
 
+                        </Typography>
+
+                        <Paper sx={{width: '40%', maxWidth:'250px'}}>
+                            <TextField fullWidth value={lockcode} onChange={handlePasscodeChange} variant="filled" label="System Password" />
+                        </Paper>
+                        <Tooltip title="Please enter a password to use the system.  Password should've been provided with the link, otherwise contact the author." placement="bottom">
+                            <InfoOutlinedIcon sx={{marginLeft:'10px'}}/>
+                        </Tooltip>
                     </Toolbar>
                 </AppBar>
             </Box>
 
-            <Box sx={{ bgcolor: '#f4f4f4', minHeight:'300px', height:'calc(100vh - (200px + 64px))', padding: '10px', overflowY:'scroll'}}>
+            <Box sx={{ backgroundImage: `url(${backgroundImage})`, backgroundRepeat: 'repeat',  bgcolor: '#f4f4f4', minHeight:'300px', height:'calc(100vh - (238px + 64px))', padding: '10px', overflowY:'scroll'}}>
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container>
                         {chatBubbles}
@@ -216,6 +237,7 @@ function App() {
                   </Button>
               </DialogActions>
           </Dialog>
+          </ThemeProvider>
       </React.Fragment>
     );
 }
