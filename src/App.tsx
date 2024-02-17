@@ -23,6 +23,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ChatControls from "./ChatControls";
 
 import backgroundImage from './img/background-topography.png';
+import githubLogo from './img/github-mark-white.png';
 
 import ReactGA from "react-ga4";
 ReactGA.initialize(process.env.REACT_APP_GA_CODE || "");
@@ -179,6 +180,7 @@ function App() {
             <Box sx={{ flexGrow: 1}} >
                 <AppBar position="static">
                     <Toolbar>
+                        <a href="https://github.com/jabdulma/chat_demo_ui"><img style={{width:'40px', marginRight: '15px'}} src={githubLogo} /></a>
                         <Typography
                             variant="h6"
                             noWrap
@@ -186,14 +188,15 @@ function App() {
                             sx={{ flexGrow: 1, display: { xs: 'block', sm: 'block' }}}
                         >
                             John's Chatbot Demo
+
                         </Typography>
-                        <Tooltip title="Please enter a password to use the system.  Password should've been provided with the link, otherwise contact the author." placement="bottom">
-                            <InfoOutlinedIcon sx={{marginRight:'10px'}}/>
-                        </Tooltip>
+
                         <Paper sx={{width: '40%', maxWidth:'250px'}}>
                             <TextField fullWidth value={lockcode} onChange={handlePasscodeChange} variant="filled" label="System Password" />
                         </Paper>
-
+                        <Tooltip title="Please enter a password to use the system.  Password should've been provided with the link, otherwise contact the author." placement="bottom">
+                            <InfoOutlinedIcon sx={{marginLeft:'10px'}}/>
+                        </Tooltip>
                     </Toolbar>
                 </AppBar>
             </Box>
