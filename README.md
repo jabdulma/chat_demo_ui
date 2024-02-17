@@ -57,8 +57,8 @@ SiteCatalyst.  Being so familiar with them makes it easy for me to add them in. 
 track message content.
 
 ### What about Mobile?
-With [MUI](https://mui.com/core/) the components used can easily be scaled to mobile.  It does require some additional styling, which 
-will come in a future update.
+With [MUI](https://mui.com/core/) the components used can easily be scaled to mobile.  That work has been done and the chat app should
+look great on most mobile devices!
 
 ### Why 2 versions of the API?
 Two reasons, one is that the Node version was written first and a slightly different version was needed for Azure.  But also 
