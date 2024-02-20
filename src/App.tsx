@@ -160,6 +160,77 @@ function App() {
         setChatBubbles(createChatBubbles());
     }
 
+    const streamingAppendMessage = (msgPart: string) => {
+        var lastMessageWasAssistant = messages[messages.length-1]["role"] === "assistant";
+        var latestMessage = lastMessageWasAssistant ? messages[messages.length-1] : {role:"assistant", content:""};
+        var contentAppended = latestMessage.content + msgPart;
+        latestMessage.content = contentAppended;
+        //If our latest message was from the ai, append.  Otherwise create a new message (or bubble)
+        if(lastMessageWasAssistant){
+            messages[messages.length-1] = latestMessage;
+        } else {
+            messages.push(latestMessage);
+        }
+        setMessages(messages)
+    }
+
+    const sendOutMessageToApiStreaming = async (msg: string) => {
+        ReactGA.event("sendMessage", {
+            lcode: lockcode
+        });
+        debugger;
+        //Create a working message stack to use on state later
+        var msgStack = messages;
+        //Handle starting set personality if needed
+        if(messages.length === 0){
+            msgStack.push(createMessage("system", personalityDesc))
+        }
+        //Push our new message
+        msgStack.push(createMessage("user", msg))
+        setMessages(msgStack);
+        setChatBubbles(createChatBubbles());
+
+        //Send out to the API
+
+
+
+        let msgBody = {
+            logincode: lockcode,
+            messages: msgStack,
+        };
+
+        const response = await fetch("/api/talktoaistream", {
+            method: "post",
+            headers: {
+                Accept: "application/json, text/plain, */*",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(msgBody),
+        });
+        if (!response.ok || !response.body) {
+            throw response.statusText;
+        }
+
+        //Build our loop to process incoming data
+        const reader = response.body.getReader();
+        const textDecoder = new TextDecoder();
+        const runLoop = true;
+
+        while (runLoop) {
+            // Here we start reading the stream, until its done.
+            const { value, done } = await reader.read();
+            if (done) {
+                console.log("Breaking stream loop.")
+                break;
+            }
+            const decodedChunk = textDecoder.decode(value, { stream: true });
+             // update state with new chunk
+            streamingAppendMessage(decodedChunk);
+            setChatBubbles(createChatBubbles());
+        }
+
+    }
+
     const handlePersonalityDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         let ptype = event.target.value
         setPersonalityDesc(ptype);
@@ -213,7 +284,7 @@ function App() {
             </Box>
         </Container>
         <ChatControls
-            sendChatToApp={sendOutMessageToApi}
+            sendChatToApp={sendOutMessageToApiStreaming}
             sendPersonalityToApp={receiveNewPersonality}
             personality={personalityDesc}
         />

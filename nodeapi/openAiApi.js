@@ -12,7 +12,7 @@ const passwords = passwordStr.split(",");
 console.log(JSON.stringify(passwords))
 
 
-var app = express();
+let app = express();
 app.use(express.json());
 
 function createError(status, msg){
@@ -44,9 +44,6 @@ async function getFromOpenAiStream(incomingMessages){
 }
 
 app.post('/api/talktoai', async function (req, res){
-    //req.body; // JavaScript object containing the parse JSON
-    //Since API access costs money, I just want to keep a basic barrier against abuse.
-
     var resObj = {};
 
     //Since API access costs money, I just want to keep a basic barrier against abuse.
@@ -62,31 +59,32 @@ app.post('/api/talktoai', async function (req, res){
         res.status(400).json(createError(400,'Invalid input, missing role or content.'));
     } else {
         var chatGptMessage = await getFromOpenAi(req.body.messages);
-        //resObj.status = 200;
         resObj = chatGptMessage
     }
     res.json(resObj);
 });
 
 //Work in progress on streaming version of the API
-app.post('/talktoaistream', async function (req, res){
-    //req.body; // JavaScript object containing the parse JSON
-    console.log(req.body);
-    try {
-        console.log("Before if");
-        if(!Array.isArray(req.body.messages)){
-            console.log("Body Messages Caught");
-            throw new Error('Invalid input, messages are not an array.');
-        } else if(!req.body.messages[0]['role'] || !req.body.messages[0]['content']){
-            console.log("Body Message Content caught");
-            throw new Error('Invalid input, missing role or content.');
+app.post('/api/talktoaistream', async function (req, res){
+    //Since API access costs money, I just want to keep a basic barrier against abuse.
+    if(!req.body.logincode){
+        res.status(400).json(createError(400, "Missing passcode"));
+    } else if(passwords.indexOf(req.body.logincode.toLowerCase()) < 0){
+        res.status(400).json(createError(400,'Invalid passcode'));
+    }
+    //Error handling
+    else if(!Array.isArray(req.body.messages)){
+        res.status(400).json(createError(400,'Invalid input, messages are not an array.'));
+    } else if(!req.body.messages[0]['role'] || !req.body.messages[0]['content']){
+        res.status(400).json(createError(400,'Invalid input, missing role or content.'));
+    } else {
+        var chatGptStream = await getFromOpenAiStream(req.body.messages);
+        //Loop through streamed response
+        for await (const chunk of chatGptStream) {
+            console.log(chunk);
+            res.write(chunk.choices[0]?.delta.content || "");
         }
-        console.log("Before getFromOpenAi");
-        var response = await getFromOpenAiStream(req.body.messages);
-        console.log(response)
-        res.write(response);
-    } catch (err){
-        return {};
+        res.end();
     }
 });
 
