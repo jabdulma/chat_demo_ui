@@ -10,13 +10,19 @@ import {createTheme, responsiveFontSizes, ThemeProvider} from '@mui/material/sty
 import CssBaseline from '@mui/material/CssBaseline';
 import {Box, Container} from '@mui/system';
 import {
-    Paper,
-    Grid,
-    TextField,
-    Typography,
     AppBar,
+    Button,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Grid,
+    Paper,
+    TextField,
     Toolbar,
-    Tooltip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button
+    Tooltip,
+    Typography
 } from '@mui/material';
 
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
@@ -45,7 +51,7 @@ function App() {
     const defaultMessages: messageType[] = [initMessages];
     const [messages, setMessages] = useState(defaultMessages);
     const [lockCode, setLockCode] = useState("");
-    const [chatBubbles, setChatBubbles] = useState([]);
+    const [chatBubbles, setChatBubbles] = useState<React.ReactElement[]>([]);
     const [personalityDesc, setPersonalityDesc] = useState("");
 
     //Dialog State
@@ -60,9 +66,9 @@ function App() {
         setDialogOpen(false);
     };
 
-    const createChatBubbles = (): any => {
+    const createChatBubbles = (): React.ReactElement[] => {
         const messageList = messages;
-        const outputBubbles: any[] = [];
+        const outputBubbles: React.ReactElement[] = [];
         let currentMessage: { role: string; content: string; };
         for (let i = 0; i < messageList.length; i++) {
             currentMessage = messageList[i];
@@ -170,7 +176,10 @@ function App() {
 
     const streamingAppendMessage = (msgPart: string) => {
         const lastMessageWasAssistant = messages[messages.length - 1]["role"] === "assistant";
-        const latestMessage = lastMessageWasAssistant ? messages[messages.length - 1] : {role: "assistant", content: ""};
+        const latestMessage = lastMessageWasAssistant ? messages[messages.length - 1] : {
+            role: "assistant",
+            content: ""
+        };
         const contentAppended = latestMessage.content + msgPart;
         latestMessage.content = contentAppended;
         //If our latest message was from the AI, append.  Otherwise, create a new message (or bubble)
@@ -249,13 +258,12 @@ function App() {
     return (
         <React.Fragment>
             <ThemeProvider theme={theme}>
-
                 <CssBaseline/>
                 <Container sx={{padding: '0px', border: '0px solid green'}} maxWidth="md">
                     <Box sx={{flexGrow: 1}}>
                         <AppBar position="static">
                             <Toolbar>
-                                <a href="https://github.com/jabdulma/chat_demo_ui"><img
+                                <a href="https://github.com/jabdulma/chat_demo_ui"><img alt="Github Logo"
                                     style={{width: '40px', marginRight: '15px'}} src={githubLogo}/></a>
                                 <Typography
                                     variant="h6"
