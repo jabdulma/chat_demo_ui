@@ -2,9 +2,9 @@ import React from 'react';
 
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { styled } from '@mui/material/styles';
+import {styled} from '@mui/material/styles';
 
-const SystemBubble = styled(Paper)(({ theme }) => ({
+const SystemBubble = styled(Paper)(({theme}) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#B0B0B0' : '#B0B0B0',
     ...theme.typography.body2,
     padding: theme.spacing(1),
@@ -12,7 +12,7 @@ const SystemBubble = styled(Paper)(({ theme }) => ({
     color: '#fff',
 }));
 
-const ChatLabel = styled("div")(({ theme }) => ({
+const ChatLabel = styled("div")(({theme}) => ({
     ...theme.typography.body2,
     paddingTop: theme.spacing(1),
     textAlign: 'left',
@@ -22,7 +22,7 @@ const ChatLabel = styled("div")(({ theme }) => ({
 
 type SystemMessageProps = {
     message: string
-}
+};
 
 function SystemMessage(props: SystemMessageProps) {
     return (

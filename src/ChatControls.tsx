@@ -2,7 +2,6 @@ import React, {useEffect, useState} from 'react';
 
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Unstable_Grid2';
-import { styled } from '@mui/material/styles';
 import {Box, Container, Stack} from "@mui/system";
 import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, TextField} from "@mui/material";
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
@@ -14,80 +13,79 @@ const personalities = {
     aliens: "You are a helpful assistant, but you love talking about aliens.",
     sassy: "You are a helpful assistant, but you are very sassy.",
     custom: ""
-}
+};
 
 type ChatControlProps = {
 
-    sendChatToApp: Function,
-    sendPersonalityToApp: Function,
-
     personality: string,
-}
+    sendChatToApp: (...args: any) => void,
+    sendPersonalityToApp: (...args: any) => void,
+};
 
 
 function ChatControls(props:ChatControlProps) {
 
-    const [chatMessage, setChatMessage]=  useState("")
+    const [chatMessage, setChatMessage]=  useState("");
     const [personality, setPersonality] = useState("default");
-    const [personalityDesc, setPersonalityDesc] = useState("")
-    const [customTextDisable, setCTD] = useState(true)
-    const [sendChatDisable, setSCD] = useState(true)
+    const [personalityDesc, setPersonalityDesc] = useState("");
+    const [customTextDisable, setCTD] = useState(true);
+    const [sendChatDisable, setSCD] = useState(true);
 
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
         if(props.personality !== ""){
-            setPersonality(personalities.custom)
-            setPersonalityDesc(props.personality)
+            setPersonality(personalities.custom);
+            setPersonalityDesc(props.personality);
         } else {
-            setPersonality("default")
-            setPersonalityDesc(personalities.default)
-            props.sendPersonalityToApp(personalities.default)
+            setPersonality("default");
+            setPersonalityDesc(personalities.default);
+            props.sendPersonalityToApp(personalities.default);
         }
     }, []);
 
     const handleSendMessage = () => {
         // Send to App for handling
-        props.sendChatToApp(chatMessage)
-        setChatMessage("")
-        setSCD(true)
-    }
+        props.sendChatToApp(chatMessage);
+        setChatMessage("");
+        setSCD(true);
+    };
 
 
     const handlechatMessageChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
-        let msg = event.target.value
-        setSCD(msg === "")
+        const msg = event.target.value;
+        setSCD(msg === "");
         setChatMessage(msg);
     };
 
     const handlePersonalityDescChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        let ptype = event.target.value
+        const ptype = event.target.value;
         setPersonalityDesc(ptype);
     };
 
     const handlePersonalityChange = (event: SelectChangeEvent<typeof personality>) => {
         type personalityKeyType = keyof typeof personalities;
-        let personalityKey: personalityKeyType = event.target.value as personalityKeyType;
+        const personalityKey: personalityKeyType = event.target.value as personalityKeyType;
 
-        let ptype = event.target.value
-        let pdesc = personalities[personalityKey]
-        setCTD(ptype === "custom" ? false : true)
+        const ptype = event.target.value;
+        const pdesc = personalities[personalityKey];
+        setCTD(ptype !== "custom");
         setPersonality(event.target.value);
-        setPersonalityDesc(pdesc)
+        setPersonalityDesc(pdesc);
         if(ptype !== "custom"){
-            props.sendPersonalityToApp(pdesc)
+            props.sendPersonalityToApp(pdesc);
         }
     };
 
     const handleChatKeyDown =  (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if(event.key == "Enter" || event.key == "Enter"){
+        if(event.key === "Enter" || event.key === "Enter"){
             handleSendMessage();
             setSCD(true);
         }
-    }
+    };
 
     const setCustomPersonality = () => {
-        props.sendPersonalityToApp(personalityDesc)
-    }
+        props.sendPersonalityToApp(personalityDesc);
+    };
 
     return (
         <React.Fragment>
@@ -144,8 +142,8 @@ function ChatControls(props:ChatControlProps) {
             </Container>
         </React.Fragment>
 
-    )
+    );
 
-};
+}
 
 export default ChatControls;
