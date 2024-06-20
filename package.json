@@ -41,9 +41,14 @@
   },
   "type": "module",
   "eslintConfig": {
+    "rules": {
+      "camelcase": 2,
+      "@stylistic/semi": ["error", "always"]
+    },
     "parser": "@typescript-eslint/parser",
     "plugins": [
-      "@typescript-eslint"
+      "@typescript-eslint",
+      "@stylistic"
     ],
     "extends": [
       "react-app",
@@ -85,6 +90,7 @@
     "@babel/core": "^7.23.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.23.9",
+    "@stylistic/eslint-plugin": "^2.2.2",
     "babel-jest": "^29.7.0"
   },
   "resolutions": {
