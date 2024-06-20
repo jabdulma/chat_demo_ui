@@ -7,7 +7,6 @@ import {Button, FormControl, InputLabel, MenuItem, Select, SelectChangeEvent, Te
 import SendRoundedIcon from "@mui/icons-material/SendRounded";
 
 
-
 const personalities = {
     default: "You are a helpful assistant.",
     aliens: "You are a helpful assistant, but you love talking about aliens.",
@@ -16,16 +15,15 @@ const personalities = {
 };
 
 type ChatControlProps = {
-
     personality: string,
     sendChatToApp: (...args: any) => void,
     sendPersonalityToApp: (...args: any) => void,
 };
 
 
-function ChatControls(props:ChatControlProps) {
+function ChatControls(props: ChatControlProps) {
 
-    const [chatMessage, setChatMessage]=  useState("");
+    const [chatMessage, setChatMessage] = useState("");
     const [personality, setPersonality] = useState("default");
     const [personalityDesc, setPersonalityDesc] = useState("");
     const [customTextDisable, setCTD] = useState(true);
@@ -33,7 +31,7 @@ function ChatControls(props:ChatControlProps) {
 
     // Similar to componentDidMount and componentDidUpdate:
     useEffect(() => {
-        if(props.personality !== ""){
+        if (props.personality !== "") {
             setPersonality(personalities.custom);
             setPersonalityDesc(props.personality);
         } else {
@@ -51,7 +49,7 @@ function ChatControls(props:ChatControlProps) {
     };
 
 
-    const handlechatMessageChange =  (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handlechatMessageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const msg = event.target.value;
         setSCD(msg === "");
         setChatMessage(msg);
@@ -71,13 +69,13 @@ function ChatControls(props:ChatControlProps) {
         setCTD(ptype !== "custom");
         setPersonality(event.target.value);
         setPersonalityDesc(pdesc);
-        if(ptype !== "custom"){
+        if (ptype !== "custom") {
             props.sendPersonalityToApp(pdesc);
         }
     };
 
-    const handleChatKeyDown =  (event: React.KeyboardEvent<HTMLDivElement>) => {
-        if(event.key === "Enter" || event.key === "Enter"){
+    const handleChatKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        if (event.key === "Enter" || event.key === "Enter") {
             handleSendMessage();
             setSCD(true);
         }
@@ -89,27 +87,42 @@ function ChatControls(props:ChatControlProps) {
 
     return (
         <React.Fragment>
-            <Container sx={{ border: '0px solid red', paddingLeft: '0px', paddingRight:'0px'}} maxWidth="md">
-                <Box sx={{ borderTop: '1px solid #AAAAAA', flex: 1, bgcolor: '#E9E9E9', height: '238px', minHeight:'238px' }}>
-                    <Box sx={{ flexGrow: 1 }}>
+            <Container sx={{border: '0px solid red', paddingLeft: '0px', paddingRight: '0px'}} maxWidth="md">
+                <Box sx={{
+                    borderTop: '1px solid #AAAAAA',
+                    flex: 1,
+                    bgcolor: '#E9E9E9',
+                    height: '238px',
+                    minHeight: '238px'
+                }}>
+                    <Box sx={{flexGrow: 1}}>
                         <Stack>
                             {/* Message Box */}
-                            <Grid container sx={{margin:'10px'}} >
+                            <Grid container sx={{margin: '10px'}}>
                                 <Grid xs={8} sm={9} md={10}>
-                                    <Paper sx={{padding:'5px'}}>
-                                        <TextField label="Message ChatGPT:" value={chatMessage} onKeyDown={handleChatKeyDown} onChange={handlechatMessageChange} fullWidth />
+                                    <Paper sx={{padding: '5px'}}>
+                                        <TextField label="Message ChatGPT:" value={chatMessage}
+                                                   onKeyDown={handleChatKeyDown} onChange={handlechatMessageChange}
+                                                   fullWidth/>
                                     </Paper>
                                 </Grid>
                                 <Grid xs={4} sm={2}>
-                                    <Button variant="contained" size="large" disabled={sendChatDisable} onClick={handleSendMessage} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Send <SendRoundedIcon sx={{paddingLeft:'10px'}}/></Button>
+                                    <Button variant="contained" size="large" disabled={sendChatDisable}
+                                            onClick={handleSendMessage} sx={{
+                                        minHeight: '63px',
+                                        maxHeight: '65px',
+                                        margin: '0px',
+                                        marginLeft: '10px'
+                                    }}>Send <SendRoundedIcon sx={{paddingLeft: '10px'}}/></Button>
                                 </Grid>
                             </Grid>
-                            <Box sx={{ flexGrow: 1,  marginLeft:'10px'}}>
-                                Below you can change ChatGPTs personality via a system call.  Doing so will clear the current message context.
+                            <Box sx={{flexGrow: 1, marginLeft: '10px'}}>
+                                Below you can change ChatGPTs personality via a system call. Doing so will clear the
+                                current message context.
                             </Box>
-                            <Grid container sx={{margin:'10px'}} >
+                            <Grid container sx={{margin: '10px'}}>
                                 <Grid xs={4} sm={2}>
-                                    <Paper sx={{padding:'5px'}}>
+                                    <Paper sx={{padding: '5px'}}>
                                         <FormControl fullWidth>
                                             <InputLabel id="demo-simple-select-label">Personality</InputLabel>
                                             <Select
@@ -128,12 +141,20 @@ function ChatControls(props:ChatControlProps) {
                                     </Paper>
                                 </Grid>
                                 <Grid xs={5} sm={8}>
-                                    <Paper sx={{padding:'5px'}}>
-                                        <TextField name="personalityDesc" disabled={customTextDisable} label="" value={personalityDesc} onChange={handlePersonalityDescChange} fullWidth />
+                                    <Paper sx={{padding: '5px'}}>
+                                        <TextField name="personalityDesc" disabled={customTextDisable} label=""
+                                                   value={personalityDesc} onChange={handlePersonalityDescChange}
+                                                   fullWidth/>
                                     </Paper>
                                 </Grid>
                                 <Grid xs={1} sm={2}>
-                                    <Button variant="contained" size="small" disabled={customTextDisable} onClick={setCustomPersonality} sx={{minHeight: '63px', maxHeight: '65px', margin:'0px', marginLeft:'10px'}} >Set</Button>
+                                    <Button variant="contained" size="small" disabled={customTextDisable}
+                                            onClick={setCustomPersonality} sx={{
+                                        minHeight: '63px',
+                                        maxHeight: '65px',
+                                        margin: '0px',
+                                        marginLeft: '10px'
+                                    }}>Set</Button>
                                 </Grid>
                             </Grid>
                         </Stack>
