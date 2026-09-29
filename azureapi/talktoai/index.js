@@ -10,7 +10,7 @@ const passwords = passwordStr.split(",");
 async function getFromOpenAi(incomingMessages){
     const completion = await openai.chat.completions.create({
         messages: incomingMessages,
-        model: "gpt-3.5-turbo"
+        model: "gpt-5.6-luna"
     });
     return completion.choices[0];
 }

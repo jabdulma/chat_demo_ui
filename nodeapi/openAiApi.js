@@ -28,7 +28,7 @@ function createError(status, msg){
 async function getFromOpenAi(incomingMessages){
     const completion = await openai.chat.completions.create({
         messages: incomingMessages,
-        model: "gpt-3.5-turbo"
+        model: "gpt-5.6-luna"
     });
     console.log(completion)
     return completion.choices[0];
@@ -37,7 +37,7 @@ async function getFromOpenAi(incomingMessages){
 async function getFromOpenAiStream(incomingMessages){
     const completion = await openai.chat.completions.create({
         messages: incomingMessages,
-        model: "gpt-3.5-turbo",
+        model: "gpt-5.6-luna",
         stream: true
     });
     return completion;
